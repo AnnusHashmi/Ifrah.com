@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap'
 import {db} from '../../firebase/firebase.utils';
+import * as firebase from 'firebase'
 
 class DataInput extends Component{
 
@@ -19,6 +20,16 @@ class DataInput extends Component{
     handleInputChange = (e) => {
         let {name, value} = e.target;
         this.setState({[name] : value});
+    }
+
+    handleFileChange = async (e) => {
+
+        const file = e.target.files[0];
+        const storageRef = firebase.storage().ref();
+        const fileRef = storageRef.child(file.name);
+        await fileRef.put(file);
+        this.setState({imgUrl : await fileRef.getDownloadURL()}) 
+        
     }
 
     hanleSubmit = (e) => {
@@ -46,12 +57,7 @@ class DataInput extends Component{
                         <FormGroup>
                                     <Label for="name"> Name of the Product  </Label>
                                     <Input type="text" name="name" id="name" placeholder="Enter the name" value={this.state.name} onChange={this.handleInputChange} />    
-                        </FormGroup> 
-
-                        <FormGroup>
-                                    <Label for="imgUrl"> Img URL </Label>
-                                    <Input type="text" name="imgUrl" id="imgUrl" placeholder="Enter the imgUrl" value={this.state.imgUrl} onChange={this.handleInputChange} />    
-                        </FormGroup> 
+                        </FormGroup>  
 
                         <FormGroup>
                                     <Label for="price"> Enter Price </Label>
@@ -80,6 +86,11 @@ class DataInput extends Component{
                                 <option>9-10 Years</option>
                                 <option>10-12 Years</option>
                             </Input>
+                        </FormGroup>
+
+                        <FormGroup>
+                                    <Label for="img"> Enter quantity </Label>
+                                    <input type="file" name="img" id="img" placeholder="Enter the image files"  onChange={this.handleFileChange} />    
                         </FormGroup>
 
                         <Button color='success' size="lg" type='submit'>Submit</Button>
